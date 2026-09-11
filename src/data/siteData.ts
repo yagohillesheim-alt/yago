@@ -5,7 +5,7 @@ export const siteData = {
     name: "Yago Luiz Hillesheim",
     title: "Project Manager",
     subtitle: "Especialista em Gestão de Projetos e Implantação de Sistemas",
-    summary: "Project Manager com experiência em tecnologia, SaaS, ERP, gestão de projetos, implantação de sistemas, Customer Success e suporte técnico. Atua conectando necessidades de negócio, clientes e equipes técnicas, com foco em previsibilidade, eficiência operacional, experiência do cliente e geração de valor.",
+    summary: "Profissional com sólida experiência em ambientes de SaaS e ERP, focado em transformar complexidade operacional em execução organizada e eficiente. Atuo na gestão de implantações, organização de backlog e liderança de times multidisciplinares sob metodologias ágeis (Scrum/Kanban). Minha trajetória integra Customer Success e Gestão de Operações, permitindo unir a excelência técnica às necessidades reais do cliente e do negócio, utilizando dados (SQL, Power BI, SAP) como alicerce para decisões estratégicas e melhoria contínua.",
     education: [
       "Tecnologia em Processos Gerenciais — concluído em 2024",
       "Tecnologia em Administração — em andamento (Conclusão 2026)"
@@ -25,6 +25,7 @@ export const siteData = {
     ],
     contact: {
       phone: "5549999809524",
+      phoneDisplay: "+55 (49) 99998-09524",
       phoneAlt: "(49) 99169-8280",
       email: "yagohillesheim@gmail.com",
       linkedin: "https://www.linkedin.com/in/yagohillesheim/",

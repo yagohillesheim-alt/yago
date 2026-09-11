@@ -618,6 +618,11 @@ const AboutSection = () => {
             <p className="text-lg text-slate-300 mb-8 leading-relaxed">
               {siteData.personal.summary}
             </p>
+            <div className="bg-blue-600/10 border-l-4 border-blue-600 p-6 mb-10 rounded-r-2xl">
+              <p className="text-slate-300 font-medium">
+                Atuo como o elo estratégico entre a tecnologia e o negócio, garantindo que projetos complexos se transformem em entregas eficientes, previsíveis e lucrativas para sua organização.
+              </p>
+            </div>
             
             <div className="grid sm:grid-cols-2 gap-8 mb-10">
               <div>
@@ -700,7 +705,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <div className="text-xs text-slate-500 font-bold uppercase">WhatsApp</div>
-                  <div className="text-white font-medium">{siteData.personal.contact.phone}</div>
+                  <div className="text-white font-medium">{siteData.personal.contact.phoneDisplay}</div>
                 </div>
               </div>
               <div className="flex items-center gap-4 group cursor-pointer">
@@ -853,7 +858,7 @@ const Footer = () => {
              <h4 className="text-white font-bold mb-6">Contato Direto</h4>
              <ul className="space-y-4">
                 <li className="flex items-center gap-2 text-slate-500 text-sm">
-                  <Phone size={14} className="text-blue-500" /> {siteData.personal.contact.phone}
+                  <Phone size={14} className="text-blue-500" /> {siteData.personal.contact.phoneDisplay}
                 </li>
                 <li className="flex items-center gap-2 text-slate-500 text-sm">
                   <Mail size={14} className="text-blue-500" /> {siteData.personal.contact.email}
