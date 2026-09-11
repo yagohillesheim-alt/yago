@@ -1,0 +1,12 @@
+{
+  "name": "Yago Luiz Hillesheim | PM",
+  "description": "Portfolio profissional de Yago Luiz Hillesheim, Project Manager especializado em tecnologia, SaaS e ERP.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
