@@ -30,7 +30,6 @@ export const siteData = {
       email: "yagohillesheim@gmail.com",
       linkedin: "https://www.linkedin.com/in/yagohillesheim/",
       instagram: "https://www.instagram.com/yago_hillesheim/",
-      calendar: "https://calendar.google.com/calendar/u/0?cid=eWFnb2hpbGxlc2hlaW1AZ21haWwuY29t",
       location: "Chapecó - SC (Atendimento Online/Híbrido)",
       hours: "Segunda a Sexta, 08h às 18h"
     }

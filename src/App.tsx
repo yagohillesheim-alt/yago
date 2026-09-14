@@ -4,8 +4,7 @@ import {
   Briefcase, Settings, Layers, BarChart3, Users, Zap, 
   ChevronRight, CheckCircle2, Menu, X, ArrowRight,
   Mail, Link2, Camera, Phone, MapPin, Clock, MessageSquare,
-  AlertCircle, ChevronDown, LayoutDashboard, Globe, Shield,
-  Calendar
+  AlertCircle, ChevronDown, LayoutDashboard, Globe, Shield
 } from 'lucide-react';
 import { siteData } from './data/siteData';
 import { cn } from './lib/utils';
@@ -142,12 +141,10 @@ const Hero = () => {
                 Solicitar Conversa Estratégica <ArrowRight size={18} />
               </a>
               <a 
-                href={siteData.personal.contact.calendar}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                href="#solucoes" 
+                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center"
               >
-                <Calendar size={18} /> Agendar Horário
+                Conhecer Soluções
               </a>
             </div>
 
@@ -702,15 +699,6 @@ const ContactSection = () => {
                   <div className="text-white font-medium">{siteData.personal.contact.email}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.open(siteData.personal.contact.calendar, '_blank')}>
-                <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-slate-800 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                  <Calendar size={24} />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 font-bold uppercase">Agenda</div>
-                  <div className="text-white font-medium">Agendar Horário Online</div>
-                </div>
-              </div>
               <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.open(`https://wa.me/${siteData.personal.contact.phone}`, '_blank')}>
                 <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-slate-800 group-hover:bg-green-600 group-hover:text-white transition-all">
                   <Phone size={24} />
@@ -847,9 +835,6 @@ const Footer = () => {
                <a href={siteData.personal.contact.linkedin} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="LinkedIn">
                  <Link2 size={20} />
                </a>
-               <a href={siteData.personal.contact.calendar} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Agendar Horário">
-                 <Calendar size={20} />
-               </a>
                <a href={siteData.personal.contact.instagram} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-pink-600 transition-all border border-slate-800" title="Instagram">
                  <Camera size={20} />
                </a>
@@ -913,6 +898,7 @@ export default function App() {
       <FAQ />
       <ContactSection />
       <Footer />
+
       
       {/* Floating CTA (Mobile) */}
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-40">
