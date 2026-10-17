@@ -1,18 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Briefcase, Settings, Layers, BarChart3, Users, Zap, 
-  ChevronRight, CheckCircle2, Menu, X, ArrowRight,
-  Mail, Link2, Camera, Phone, MapPin, Clock, MessageSquare,
-  AlertCircle, ChevronDown, LayoutDashboard, Globe, Shield
+import {
+  Briefcase, Settings, Layers, BarChart3, Users, Zap,
+  CheckCircle2, Menu, X, ArrowRight, Download,
+  Mail, Link2, Camera, Phone, MapPin, Clock, Shield
 } from 'lucide-react';
 import { siteData } from './data/siteData';
 import { cn } from './lib/utils';
-import { Solution, Metric } from './types';
 
 // --- Icons Mapping ---
 const IconMap: Record<string, any> = {
   Briefcase, Settings, Layers, BarChart3, Users, Zap
+};
+
+const CV_URL = '/Yago-Hillesheim-Curriculo.pdf';
+const SECTION_IDS = ['inicio', 'resultados', 'servicos', 'experiencia', 'sobre', 'contato'];
+
+// --- Helpers ---
+
+const useActiveSection = (ids: string[]) => {
+  const [active, setActive] = useState(ids[0]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      }),
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return active;
+};
+
+const SectionTitle = ({ eyebrow, title, text }: { eyebrow: string; title: string; text?: string }) => (
+  <div className="mb-12 max-w-2xl">
+    <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-3">{eyebrow}</div>
+    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{title}</h2>
+    {text && <p className="text-slate-300 leading-relaxed">{text}</p>}
+  </div>
+);
+
+// Shows /foto.jpg when it exists; falls back to initials until a photo is added to /public.
+const Avatar = ({ className }: { className?: string }) => {
+  const [failed, setFailed] = useState(false);
+  return failed ? (
+    <div className={cn('flex items-center justify-center bg-slate-900 text-blue-500 font-tech text-7xl font-bold', className)}>
+      YH
+    </div>
+  ) : (
+    <img
+      src="/foto.jpg"
+      alt="Yago Hillesheim"
+      onError={() => setFailed(true)}
+      className={cn('object-cover', className)}
+    />
+  );
 };
 
 // --- Components ---
@@ -20,87 +68,89 @@ const IconMap: Record<string, any> = {
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const active = useActiveSection(SECTION_IDS);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navLinks = [
-    { name: 'Início', href: '#inicio' },
-    { name: 'Sobre', href: '#sobre' },
-    { name: 'Soluções', href: '#solucoes' },
-    { name: 'Experiência', href: '#experiencia' },
-    { name: 'Resultados', href: '#resultados' },
-    { name: 'Contato', href: '#contato' },
+    { name: 'Resultados', href: '#resultados', id: 'resultados' },
+    { name: 'Serviços', href: '#servicos', id: 'servicos' },
+    { name: 'Experiência', href: '#experiencia', id: 'experiencia' },
+    { name: 'Sobre', href: '#sobre', id: 'sobre' },
   ];
 
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
-      isScrolled ? "bg-slate-950/80 backdrop-blur-md border-b border-slate-800 py-3" : "bg-transparent"
+      isScrolled || isMobileMenuOpen ? "bg-slate-950/90 backdrop-blur-md border-b border-slate-800 py-3" : "bg-transparent"
     )}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <a href="#inicio" className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-tech font-bold">
             Y
           </div>
-          <span className="text-white font-bold tracking-tight hidden sm:block">YAGO HILLESHEIM</span>
-        </div>
+          <span className="text-white font-semibold tracking-tight hidden sm:block">Yago Hillesheim</span>
+        </a>
 
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
+            <a
+              key={link.name}
               href={link.href}
-              className="text-slate-300 hover:text-blue-400 transition-colors text-sm font-medium"
+              className={cn(
+                "text-sm font-medium transition-colors",
+                active === link.id ? "text-white" : "text-slate-400 hover:text-white"
+              )}
             >
               {link.name}
             </a>
           ))}
-          <a 
+          <a
             href="#contato"
-            className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg shadow-blue-900/20"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
           >
-            Conversa Estratégica
+            Entrar em contato
           </a>
         </div>
 
-        <button 
+        <button
           className="md:hidden text-white"
+          aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-slate-900 border-b border-slate-800 overflow-hidden mt-4 rounded-2xl"
+            className="md:hidden overflow-hidden"
           >
-            <div className="flex flex-col p-6 gap-4">
+            <div className="flex flex-col pt-6 pb-4 gap-5">
               {navLinks.map((link) => (
-                <a 
-                  key={link.name} 
+                <a
+                  key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-slate-300 text-lg font-medium"
+                  className="text-slate-200 text-lg font-medium"
                 >
                   {link.name}
                 </a>
               ))}
-              <a 
+              <a
                 href="#contato"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-blue-600 text-white text-center py-3 rounded-xl font-bold"
+                className="bg-blue-600 text-white text-center py-3 rounded-lg font-semibold"
               >
-                Solicitar Conversa Estratégica
+                Entrar em contato
               </a>
             </div>
           </motion.div>
@@ -112,105 +162,72 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section id="inicio" className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-slate-950">
-      {/* Background Gradients */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -mr-64 -mt-64" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] -ml-64 -mb-64" />
+    <section id="inicio" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-slate-950 bg-grid">
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div className="grid lg:grid-cols-5 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            className="lg:col-span-3"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-500/30 text-blue-400 text-xs font-bold mb-6 tracking-wider uppercase">
-              <Zap size={14} /> Gestão Orientada a Resultados
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-300 font-tech text-xs mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              Implantação de ERP e SaaS · Chapecó/SC
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-              Gestão de projetos, processos e tecnologia para empresas que precisam <span className="text-blue-500">entregar melhor.</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
+              Gestão de projetos, processos e tecnologia para empresas que precisam{' '}
+              <span className="text-blue-400">entregar melhor.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-xl leading-relaxed">
+            <p className="text-lg text-slate-300 mb-8 max-w-xl leading-relaxed">
               {siteData.valuePropositions[0]}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a 
-                href="#contato" 
-                className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20"
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              <a
+                href="#contato"
+                className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                Solicitar Conversa Estratégica <ArrowRight size={18} />
+                Solicitar conversa <ArrowRight size={18} />
               </a>
-              <a 
-                href="#solucoes" 
-                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center"
+              <a
+                href={CV_URL}
+                download
+                className="text-slate-200 hover:text-white font-medium flex items-center justify-center gap-2 transition-colors"
               >
-                Conhecer Soluções
+                <Download size={18} /> Baixar currículo (PDF)
               </a>
             </div>
 
-            <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-6 pt-12 border-t border-slate-800/50">
+            <div className="mt-12 grid grid-cols-3 gap-6 pt-8 border-t border-slate-800">
               {siteData.metrics.slice(0, 3).map((metric, idx) => (
                 <div key={idx}>
-                  <div className="text-2xl font-bold text-white mb-1">{metric.value}</div>
-                  <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{metric.label}</div>
+                  <div className="font-tech text-2xl md:text-3xl font-bold text-white mb-1">{metric.value}</div>
+                  <div className="text-xs text-slate-400 leading-snug">{metric.label}</div>
                 </div>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative hidden lg:block"
+            className="lg:col-span-2 max-w-xs mx-auto w-full lg:max-w-none"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="relative z-10 rounded-3xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl p-4">
-               {/* Decorative elements representing a dashboard */}
-               <div className="bg-slate-950 rounded-2xl p-6 h-[450px] relative overflow-hidden">
-                  <div className="flex gap-3 mb-8">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="h-4 bg-slate-800 rounded w-1/3" />
-                    <div className="h-32 bg-slate-800/50 rounded-xl flex items-end p-4 gap-2">
-                       <div className="w-full bg-blue-600 rounded-t h-1/2" />
-                       <div className="w-full bg-blue-600 rounded-t h-3/4" />
-                       <div className="w-full bg-blue-600 rounded-t h-2/3" />
-                       <div className="w-full bg-blue-600 rounded-t h-full" />
-                       <div className="w-full bg-blue-600 rounded-t h-4/5" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="h-24 bg-slate-800/50 rounded-xl p-4 space-y-2">
-                        <div className="h-2 bg-slate-700 rounded w-1/2" />
-                        <div className="h-4 bg-slate-600 rounded w-3/4" />
-                      </div>
-                      <div className="h-24 bg-slate-800/50 rounded-xl p-4 space-y-2">
-                        <div className="h-2 bg-slate-700 rounded w-1/2" />
-                        <div className="h-4 bg-slate-600 rounded w-3/4" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating badge */}
-                  <motion.div 
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 4 }}
-                    className="absolute bottom-10 right-10 bg-blue-600 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-blue-400"
-                  >
-                    <div className="bg-blue-400/30 p-2 rounded-lg">
-                      <CheckCircle2 size={24} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold">Projeto Concluído</div>
-                      <div className="text-[10px] opacity-80">Eficiência +25%</div>
-                    </div>
-                  </motion.div>
-               </div>
+            <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-900">
+              <Avatar className="w-full aspect-[4/5]" />
+              <div className="p-5 border-t border-slate-800">
+                <div className="text-white font-semibold">Yago Luiz Hillesheim</div>
+                <div className="text-slate-400 text-sm mb-4">Project Manager</div>
+                <div className="flex flex-wrap gap-2">
+                  {['SaaS', 'ERP', 'Scrum', 'SQL', 'Power BI'].map((t) => (
+                    <span key={t} className="font-tech text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">{t}</span>
+                  ))}
+                </div>
+              </div>
             </div>
-            {/* Background blob */}
-            <div className="absolute -top-10 -right-10 w-full h-full bg-blue-600/20 rounded-3xl blur-3xl -z-10" />
           </motion.div>
         </div>
       </div>
@@ -218,277 +235,102 @@ const Hero = () => {
   );
 };
 
-const ChallengeSection = () => {
-  const challenges = [
-    { title: "Projetos atrasados", icon: Clock },
-    { title: "Cronogramas pouco confiáveis", icon: LayoutDashboard },
-    { title: "Backlog sem prioridade", icon: Layers },
-    { title: "Processos dependentes de pessoas", icon: Users },
-    { title: "Relatórios demorados", icon: BarChart3 },
-    { title: "Falta de indicadores claros", icon: AlertCircle },
-    { title: "Falha de comunicação técnica/cliente", icon: MessageSquare },
-    { title: "Suporte com alto tempo de resposta", icon: Zap },
-  ];
-
-  return (
-    <section className="py-20 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Seu projeto ou operação enfrenta algum destes desafios?</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">Identificar o gargalo é o primeiro passo para a transformação operacional.</p>
-        </div>
-        
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {challenges.map((item, idx) => (
-            <motion.div
-              key={idx}
-              whileHover={{ y: -5 }}
-              className="bg-slate-950 border border-slate-800 p-6 rounded-2xl group hover:border-blue-500/50 transition-all cursor-pointer"
-              onClick={() => {
-                document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-blue-500 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <item.icon size={24} />
-              </div>
-              <h3 className="text-white font-bold mb-2 group-hover:text-blue-400 transition-all">{item.title}</h3>
-              <div className="flex items-center gap-2 text-slate-500 text-sm font-semibold group-hover:text-slate-300 transition-all">
-                Ver solução <ChevronRight size={16} />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const SolutionSection = () => {
-  return (
-    <section id="solucoes" className="py-20 bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div>
-            <div className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-2">Especialidades</div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white">Soluções Estratégicas</h2>
-          </div>
-          <p className="text-slate-400 max-w-md">Serviços desenhados para conectar negócio, tecnologia e clientes com foco em eficiência.</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {siteData.solutions.map((sol) => {
-            const IconComp = IconMap[sol.icon] || Settings;
-            return (
-              <div key={sol.id} className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 hover:bg-slate-900 transition-all flex flex-col h-full">
-                <div className="w-14 h-14 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-500 mb-8 border border-blue-500/20">
-                  <IconComp size={28} />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{sol.title}</h3>
-                <p className="text-slate-400 mb-8 flex-grow leading-relaxed">
-                  {sol.description}
-                </p>
-                <ul className="space-y-3 mb-8">
-                  {sol.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
-                      <CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <a 
-                  href="#contato" 
-                  className="inline-flex items-center gap-2 text-blue-500 font-bold hover:text-blue-400 transition-all group"
-                >
-                  Falar sobre este serviço <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const InteractiveDiagnostic = () => {
-  const [step, setStep] = useState(1);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-
-  const questions = [
-    {
-      id: 'desafio',
-      title: 'Qual é o seu principal desafio hoje?',
-      options: ['Implantação', 'Gestão de Projetos', 'Processos', 'Dados e Indicadores', 'Customer Success', 'Suporte', 'Automação', 'Gestão de Mudanças']
-    },
-    {
-      id: 'estagio',
-      title: 'Em que estágio está sua operação?',
-      options: ['Ainda planejando', 'Já começou com dificuldades', 'Projeto atrasado', 'Funcionando, mas precisa melhorar', 'Escalando', 'Não sei exatamente']
-    },
-    {
-      id: 'resultado',
-      title: 'Qual resultado você mais deseja?',
-      options: ['Mais previsibilidade', 'Mais velocidade', 'Menos retrabalho', 'Melhor experiência do cliente', 'Clareza nos indicadores', 'Equipes alinhadas']
-    }
-  ];
-
-  const handleSelect = (option: string) => {
-    setAnswers({ ...answers, [questions[step - 1].id]: option });
-    if (step < questions.length) {
-      setStep(step + 1);
-    } else {
-      setStep(4);
-    }
-  };
-
-  return (
-    <section className="py-20 bg-blue-600">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="bg-slate-950 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <LayoutDashboard size={120} className="text-white" />
-          </div>
-
-          <AnimatePresence mode="wait">
-            {step <= 3 ? (
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
-                <div className="flex items-center gap-2 mb-8">
-                  {[1, 2, 3].map((s) => (
-                    <div 
-                      key={s} 
-                      className={cn(
-                        "h-1 rounded-full flex-grow transition-all",
-                        s <= step ? "bg-blue-500" : "bg-slate-800"
-                      )} 
-                    />
-                  ))}
-                </div>
-                <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-2">Triagem Interativa</h3>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">{questions[step - 1].title}</h2>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {questions[step - 1].options.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => handleSelect(opt)}
-                      className="p-4 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 hover:border-blue-500 hover:bg-slate-800 transition-all text-left font-medium"
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="complete"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center"
-              >
-                <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <CheckCircle2 size={40} />
-                </div>
-                <h2 className="text-3xl font-bold text-white mb-4">Diagnóstico Pré-Analisado</h2>
-                <p className="text-slate-400 mb-8 text-lg">
-                  Suas respostas ajudam a iniciar o diagnóstico. Uma conversa estratégica permitirá compreender o contexto, o escopo e as prioridades da sua operação.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a 
-                    href="#contato"
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/40"
-                  >
-                    Solicitar Diagnóstico Comercial
-                  </a>
-                  <button 
-                    onClick={() => setStep(1)}
-                    className="text-slate-400 hover:text-white transition-all font-semibold"
-                  >
-                    Refazer Triagem
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </section>
-  );
-};
+const metricSources = ['Vision System', 'Vision System', 'Packid', 'Packid', 'Dotse', 'Angelira'];
 
 const ResultsSection = () => {
-  return (
-    <section id="resultados" className="py-20 bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-2">Casos de Sucesso</div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Resultados Históricos Comprovados</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">Métricas obtidas em experiências anteriores focadas em eficiência operacional.</p>
-        </div>
+  const [main, rest] = [siteData.metrics.slice(0, 3), siteData.metrics.slice(3)];
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {siteData.metrics.map((metric, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-slate-900 border border-slate-800 p-8 rounded-3xl relative overflow-hidden"
-            >
-              <div className="text-4xl font-black text-blue-500 mb-2">{metric.value}</div>
-              <h3 className="text-white font-bold mb-4">{metric.label}</h3>
-              <p className="text-slate-400 text-sm mb-4 leading-relaxed">{metric.description}</p>
-              <div className="pt-4 border-t border-slate-800 flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-tighter">
-                <Zap size={14} /> Benefício: {metric.benefit}
-              </div>
-            </motion.div>
+  return (
+    <section id="resultados" className="py-20 bg-slate-950 border-t border-slate-800/60">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionTitle
+          eyebrow="Resultados"
+          title="Números que vêm da operação"
+          text="Métricas obtidas nas empresas em que atuei, com a origem de cada uma."
+        />
+
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          {main.map((metric, idx) => (
+            <div key={idx} className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+              <div className="font-tech text-4xl font-bold text-blue-400 mb-3">{metric.value}</div>
+              <h3 className="text-white font-semibold mb-2">{metric.label}</h3>
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">{metric.context}</p>
+              <div className="font-tech text-xs text-slate-400">{metricSources[idx]}</div>
+            </div>
           ))}
         </div>
 
-        <p className="mt-12 text-center text-slate-600 text-xs italic">
-          * Resultados históricos variam conforme o contexto, a maturidade da operação, o escopo e o nível de participação das equipes.
+        <div className="grid sm:grid-cols-3 gap-6">
+          {rest.map((metric, idx) => (
+            <div key={idx} className="flex items-center gap-4 border border-slate-800 rounded-xl p-5">
+              <div className="font-tech text-2xl font-bold text-blue-400 shrink-0">{metric.value}</div>
+              <div>
+                <div className="text-white text-sm font-semibold">{metric.label}</div>
+                <div className="font-tech text-xs text-slate-400">{metricSources[idx + 3]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-8 text-slate-400 text-xs">
+          * Resultados variam conforme o contexto, a maturidade da operação e o escopo de cada projeto.
         </p>
       </div>
     </section>
   );
 };
 
-const MethodSection = () => {
-  const steps = [
-    { title: "Diagnóstico Inicial", desc: "Conversa para entender contexto, dores e objetivos." },
-    { title: "Mapeamento", desc: "Análise de processos, riscos e gargalos técnicos." },
-    { title: "Plano de Ação", desc: "Definição de prioridades e ritos de acompanhamento." },
-    { title: "Execução", desc: "Condução do projeto com foco em entregas mensuráveis." },
-    { title: "Melhoria Contínua", desc: "Ajustes baseados em dados e feedback do cliente." },
-  ];
+const methodSteps = ['Diagnóstico', 'Mapeamento', 'Plano de ação', 'Execução', 'Melhoria contínua'];
 
+const ServicesSection = () => {
   return (
-    <section className="py-20 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Método de Trabalho</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">Uma abordagem estruturada para garantir a previsibilidade e o sucesso da entrega.</p>
+    <section id="servicos" className="py-20 bg-slate-900/40 border-t border-slate-800/60">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionTitle
+          eyebrow="Serviços"
+          title="Como posso ajudar"
+          text="Seis frentes para conectar negócio, tecnologia e clientes com previsibilidade."
+        />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {siteData.solutions.map((sol) => {
+            const IconComp = IconMap[sol.icon] || Settings;
+            return (
+              <div key={sol.id} className="bg-slate-950 border border-slate-800 rounded-xl p-6 hover:border-blue-500/40 transition-colors flex flex-col">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-5">
+                  <IconComp size={20} />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">{sol.title}</h3>
+                <p className="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">{sol.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {sol.items.slice(0, 3).map((item) => (
+                    <span key={item} className="text-xs px-2 py-1 rounded bg-slate-900 text-slate-300 border border-slate-800">{item}</span>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="relative">
-          {/* Progress line */}
-          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -translate-y-1/2 hidden lg:block" />
-          
-          <div className="grid lg:grid-cols-5 gap-8 relative">
-            {steps.map((step, idx) => (
-              <div key={idx} className="bg-slate-950 p-6 rounded-2xl border border-slate-800 relative z-10 lg:text-center">
-                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold mb-4 lg:mx-auto">
-                  {idx + 1}
-                </div>
-                <h3 className="text-white font-bold mb-2">{step.title}</h3>
-                <p className="text-slate-400 text-sm">{step.desc}</p>
-              </div>
+        <div className="mt-14">
+          <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-4">Como trabalho</div>
+          <ol className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {methodSteps.map((step, idx) => (
+              <li key={step} className="flex items-center gap-3 text-sm text-slate-200">
+                <span className="font-tech text-blue-400 text-xs">0{idx + 1}</span>
+                {step}
+              </li>
             ))}
-          </div>
+          </ol>
+        </div>
+
+        <div className="mt-12">
+          <a
+            href="#contato"
+            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+          >
+            Falar sobre o seu projeto <ArrowRight size={18} />
+          </a>
         </div>
       </div>
     </section>
@@ -497,39 +339,40 @@ const MethodSection = () => {
 
 const ExperienceSection = () => {
   return (
-    <section id="experiencia" className="py-20 bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="experiencia" className="py-20 bg-slate-950 border-t border-slate-800/60">
+      <div className="max-w-6xl mx-auto px-6">
         <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1">
-            <div className="sticky top-32">
-              <div className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-2">Trajetória</div>
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Experiência Aplicada</h2>
-              <p className="text-slate-400 mb-8 leading-relaxed">
-                Atuação em ambientes dinâmicos de SaaS e ERP, conduzindo projetos de tecnologia e operações com foco em resultados.
-              </p>
-              <div className="space-y-4">
-                {["100% Retenção em clientes críticos", "+12 Onboardings personalizados", "Redução de SLAs operacionais"].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-slate-300 font-medium">
-                    <CheckCircle2 size={20} className="text-blue-500" />
-                    {item}
-                  </div>
-                ))}
-              </div>
+            <div className="lg:sticky lg:top-28">
+              <SectionTitle
+                eyebrow="Trajetória"
+                title="Experiência"
+                text="Da logística e do suporte à gestão de implantações de ERP e SaaS."
+              />
+              <a
+                href={CV_URL}
+                download
+                className="inline-flex items-center gap-2 border border-slate-700 hover:border-blue-500 text-white px-5 py-3 rounded-lg font-medium transition-colors"
+              >
+                <Download size={18} /> Currículo completo (PDF)
+              </a>
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-8">
-            {siteData.experience.map((item, idx) => (
-              <div key={idx} className="bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-blue-500/30 transition-all">
-                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                  <div className="w-2 h-8 bg-blue-600 rounded-full" />
-                  {item.area}
-                </h3>
-                <ul className="space-y-4">
-                  {item.tasks.map((task, i) => (
-                    <li key={i} className="flex items-start gap-4 text-slate-400 leading-relaxed">
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-700 mt-2.5 shrink-0" />
-                      <span>{task}</span>
+          <div className="lg:col-span-2 space-y-6">
+            {siteData.timeline.map((job) => (
+              <div key={job.company} className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-4">
+                  <h3 className="text-lg font-semibold text-white">
+                    {job.company} <span className="text-slate-400 font-normal">· {job.role}</span>
+                  </h3>
+                  <span className="font-tech text-xs text-slate-400 shrink-0">{job.period}</span>
+                </div>
+                <ul className="space-y-3">
+                  {job.highlights.map((h, i) => (
+                    <li key={i} className="flex items-start gap-3 text-slate-300 text-sm leading-relaxed">
+                      <CheckCircle2 size={16} className="text-blue-400 shrink-0 mt-0.5" />
+                      <span>{h}</span>
                     </li>
                   ))}
                 </ul>
@@ -542,132 +385,83 @@ const ExperienceSection = () => {
   );
 };
 
-const ToolSection = () => {
-  return (
-    <section className="py-20 bg-slate-900 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">Competências Técnicas</h2>
-          <p className="text-slate-400">Ferramentas e metodologias utilizadas conforme a necessidade de cada projeto.</p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="space-y-6">
-            <h4 className="text-blue-500 font-bold text-sm uppercase">Gestão e Método</h4>
-            <div className="flex flex-wrap gap-2">
-              {siteData.tools.methodologies.map(t => (
-                <span key={t} className="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-sm">{t}</span>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-blue-500 font-bold text-sm uppercase">Dados e Analytics</h4>
-            <div className="flex flex-wrap gap-2">
-              {siteData.tools.data.map(t => (
-                <span key={t} className="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-sm">{t}</span>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-blue-500 font-bold text-sm uppercase">Design e Produto</h4>
-            <div className="flex flex-wrap gap-2">
-              {siteData.tools.design.map(t => (
-                <span key={t} className="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-sm">{t}</span>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-blue-500 font-bold text-sm uppercase">Sistemas</h4>
-            <div className="flex flex-wrap gap-2">
-              {siteData.tools.systems.map(t => (
-                <span key={t} className="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-sm">{t}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const AboutSection = () => {
-  return (
-    <section id="sobre" className="py-20 bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative">
-            <div className="aspect-square bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 relative z-10 flex items-center justify-center text-slate-500">
-               {/* Placeholder for real photo or abstract tech art */}
-               <Users size={120} strokeWidth={1} />
-            </div>
-            <div className="absolute -bottom-6 -right-6 w-full h-full border-2 border-blue-600 rounded-3xl -z-10" />
-            
-            <div className="absolute -top-6 -left-6 p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-20 max-w-[200px]">
-              <div className="text-blue-500 font-bold text-xs uppercase mb-2">Educação</div>
-              {siteData.personal.education.map((edu, idx) => (
-                <div key={idx} className="text-white text-xs font-semibold mb-2 last:mb-0 leading-tight">
-                  {edu}
-                </div>
-              ))}
-            </div>
-          </div>
+  const toolGroups = [
+    { label: 'Gestão', items: siteData.tools.methodologies },
+    { label: 'Dados', items: siteData.tools.data },
+    { label: 'Sistemas', items: siteData.tools.systems },
+  ];
 
-          <div>
-            <div className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-2">Sobre o Profissional</div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">{siteData.personal.name}</h2>
-            <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+  return (
+    <section id="sobre" className="py-20 bg-slate-900/40 border-t border-slate-800/60">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="grid lg:grid-cols-5 gap-12">
+          <div className="lg:col-span-3">
+            <SectionTitle eyebrow="Sobre" title={siteData.personal.name} />
+            <p className="text-slate-300 leading-relaxed mb-6 -mt-6">
               {siteData.personal.summary}
             </p>
-            <div className="bg-blue-600/10 border-l-4 border-blue-600 p-6 mb-10 rounded-r-2xl">
-              <p className="text-slate-300 font-medium">
-                Atuo como o elo estratégico entre a tecnologia e o negócio, garantindo que projetos complexos se transformem em entregas eficientes, previsíveis e lucrativas para sua organização.
+            <div className="border-l-2 border-blue-500 pl-5 mb-10">
+              <p className="text-slate-200">
+                Atuo como o elo entre a tecnologia e o negócio, para que projetos complexos virem entregas previsíveis.
               </p>
             </div>
-            
-            <div className="grid sm:grid-cols-2 gap-8 mb-10">
-              <div>
-                <h4 className="text-white font-bold mb-4 flex items-center gap-2">
-                  <Shield size={18} className="text-blue-500" /> Certificações
-                </h4>
-                <ul className="space-y-2">
-                  {siteData.personal.certifications.slice(0, 6).map((c, i) => (
-                    <li key={i} className="text-sm text-slate-400 flex items-center gap-2">
-                      <div className="w-1 h-1 bg-blue-500 rounded-full" /> {c}
-                    </li>
-                  ))}
-                  <li className="text-xs text-blue-400 font-bold italic mt-2">+ outras especializações</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-white font-bold mb-4 flex items-center gap-2">
-                  <Globe size={18} className="text-blue-500" /> Diferenciais
-                </h4>
-                <div className="space-y-4">
-                  {["Visão Consultiva", "Foco em Dados", "Gestão Híbrida", "Empatia Técnica"].map((d, i) => (
-                    <div key={i} className="text-sm text-slate-400 bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
-                      {d}
-                    </div>
-                  ))}
+
+            <div className="space-y-5">
+              {toolGroups.map((group) => (
+                <div key={group.label} className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                  <div className="font-tech text-xs text-slate-400 uppercase tracking-widest sm:w-24 shrink-0 sm:pt-1.5">{group.label}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((t) => (
+                      <span key={t} className="text-sm px-3 py-1 rounded-md bg-slate-950 border border-slate-800 text-slate-200">{t}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
 
-            <div className="flex gap-4">
-              <a 
-                href={siteData.personal.contact.linkedin} 
-                target="_blank" 
+            <div className="flex gap-4 mt-10">
+              <a
+                href={siteData.personal.contact.linkedin}
+                target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-xl font-bold transition-all border border-slate-700"
+                className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-lg font-medium transition-colors border border-slate-700"
               >
-                <Link2 size={20} /> LinkedIn
+                <Link2 size={18} /> LinkedIn
               </a>
-              <a 
-                href={siteData.personal.contact.instagram} 
-                target="_blank" 
+              <a
+                href={siteData.personal.contact.instagram}
+                target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-xl font-bold transition-all border border-slate-700"
+                className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-lg font-medium transition-colors border border-slate-700"
               >
-                <Camera size={20} /> Instagram
+                <Camera size={18} /> Instagram
+              </a>
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Shield size={18} className="text-blue-400" /> Formação
+              </h3>
+              <ul className="space-y-3">
+                {siteData.personal.education.map((edu, idx) => (
+                  <li key={idx} className="text-sm text-slate-300">{edu}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
+              <h3 className="text-white font-semibold mb-4">Certificações</h3>
+              <ul className="space-y-2">
+                {siteData.personal.certifications.slice(0, 6).map((c, i) => (
+                  <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-blue-400 rounded-full" /> {c}
+                  </li>
+                ))}
+              </ul>
+              <a href={CV_URL} download className="inline-block mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
+                Ver lista completa no currículo
               </a>
             </div>
           </div>
@@ -683,7 +477,7 @@ const ContactSection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div>
-            <div className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-2">Contato</div>
+            <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-3">Contato</div>
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Solicite uma Conversa Estratégica</h2>
             <p className="text-slate-400 text-lg mb-10 leading-relaxed">
               Pronto para organizar sua operação e acelerar seus projetos? Vamos avaliar juntos o melhor próximo passo.
@@ -695,16 +489,16 @@ const ContactSection = () => {
                   <Mail size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-bold uppercase">Email</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">Email</div>
                   <div className="text-white font-medium">{siteData.personal.contact.email}</div>
                 </div>
               </div>
               <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.open(`https://wa.me/${siteData.personal.contact.phone}`, '_blank')}>
-                <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-slate-800 group-hover:bg-green-600 group-hover:text-white transition-all">
+                <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-slate-800 group-hover:bg-blue-600 group-hover:text-white transition-all">
                   <Phone size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-bold uppercase">WhatsApp</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">WhatsApp</div>
                   <div className="text-white font-medium">{siteData.personal.contact.phoneDisplay}</div>
                 </div>
               </div>
@@ -713,14 +507,14 @@ const ContactSection = () => {
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-bold uppercase">Localização</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">Localização</div>
                   <div className="text-white font-medium">{siteData.personal.contact.location}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-900 p-8 md:p-10 rounded-3xl border border-slate-800 shadow-2xl">
+          <div className="bg-slate-900 p-8 md:p-10 rounded-2xl border border-slate-800 shadow-2xl">
              <form className="space-y-6" onSubmit={(e) => {
                e.preventDefault();
                const d = new FormData(e.currentTarget);
@@ -737,21 +531,21 @@ const ContactSection = () => {
              }}>
                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase">Nome Completo</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase">Nome Completo</label>
                     <input type="text" name="nome" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Seu nome" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase">Empresa</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase">Empresa</label>
                     <input type="text" name="empresa" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Nome da empresa" />
                   </div>
                </div>
                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase">WhatsApp</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase">WhatsApp</label>
                     <input type="text" name="whatsapp" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="(00) 00000-0000" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase">Serviço de Interesse</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase">Serviço de Interesse</label>
                     <select name="servico" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all appearance-none">
                       <option>Gestão de Projetos</option>
                       <option>Implantação de Sistemas</option>
@@ -763,66 +557,17 @@ const ContactSection = () => {
                   </div>
                </div>
                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Mensagem / Desafio</label>
+                  <label className="text-xs font-bold text-slate-400 uppercase">Mensagem / Desafio</label>
                   <textarea name="mensagem" rows={4} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all resize-none" placeholder="Conte brevemente seu desafio..." />
                </div>
                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2">
                   Solicitar Conversa Estratégica <ArrowRight size={20} />
                </button>
-               <p className="text-[10px] text-slate-600 text-center">
+               <p className="text-[10px] text-slate-400 text-center">
                  Ao enviar, o WhatsApp abrirá com sua mensagem pronta. Seus dados são usados apenas para contato profissional.
                </p>
              </form>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const FAQ = () => {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
-
-  return (
-    <section className="py-20 bg-slate-900">
-      <div className="max-w-3xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">Dúvidas Frequentes</h2>
-          <p className="text-slate-400">Respostas rápidas sobre o método e atuação profissional.</p>
-        </div>
-
-        <div className="space-y-4">
-          {siteData.faq.map((item, idx) => (
-            <div key={idx} className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
-              <button 
-                onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                className="w-full p-6 text-left flex items-center justify-between group"
-              >
-                <span className={cn(
-                  "font-bold transition-all",
-                  openIdx === idx ? "text-blue-500" : "text-white"
-                )}>{item.question}</span>
-                <ChevronDown className={cn(
-                  "text-slate-500 transition-all",
-                  openIdx === idx ? "rotate-180 text-blue-500" : ""
-                )} />
-              </button>
-              <AnimatePresence>
-                {openIdx === idx && (
-                  <motion.div 
-                    initial={{ height: 0 }}
-                    animate={{ height: 'auto' }}
-                    exit={{ height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-6 pt-0 text-slate-400 border-t border-slate-900 leading-relaxed">
-                      {item.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -841,14 +586,14 @@ const Footer = () => {
               </div>
               <span className="text-white font-bold tracking-tight">YAGO HILLESHEIM</span>
             </div>
-            <p className="text-slate-500 max-w-sm mb-8">
+            <p className="text-slate-400 max-w-sm mb-8">
               Conectando negócio, tecnologia e clientes para entregar resultados com previsibilidade e eficiência.
             </p>
             <div className="flex gap-4">
                <a href={siteData.personal.contact.linkedin} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="LinkedIn">
                  <Link2 size={20} />
                </a>
-               <a href={siteData.personal.contact.instagram} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-pink-600 transition-all border border-slate-800" title="Instagram">
+               <a href={siteData.personal.contact.instagram} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Instagram">
                  <Camera size={20} />
                </a>
                <a href={`mailto:${siteData.personal.contact.email}`} className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Email">
@@ -858,32 +603,32 @@ const Footer = () => {
           </div>
 
           <div>
-             <h4 className="text-white font-bold mb-6">Navegação</h4>
+             <h4 className="text-white font-semibold mb-6">Navegação</h4>
              <ul className="space-y-4">
-                <li><a href="#sobre" className="text-slate-500 hover:text-blue-500 text-sm transition-colors">Sobre Mim</a></li>
-                <li><a href="#solucoes" className="text-slate-500 hover:text-blue-500 text-sm transition-colors">Soluções</a></li>
-                <li><a href="#experiencia" className="text-slate-500 hover:text-blue-500 text-sm transition-colors">Experiência</a></li>
-                <li><a href="#resultados" className="text-slate-500 hover:text-blue-500 text-sm transition-colors">Resultados</a></li>
+                <li><a href="#sobre" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Sobre Mim</a></li>
+                <li><a href="#servicos" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Soluções</a></li>
+                <li><a href="#experiencia" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Experiência</a></li>
+                <li><a href="#resultados" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Resultados</a></li>
              </ul>
           </div>
 
           <div>
-             <h4 className="text-white font-bold mb-6">Contato Direto</h4>
+             <h4 className="text-white font-semibold mb-6">Contato Direto</h4>
              <ul className="space-y-4">
-                <li className="flex items-center gap-2 text-slate-500 text-sm">
+                <li className="flex items-center gap-2 text-slate-400 text-sm">
                   <Phone size={14} className="text-blue-500" /> {siteData.personal.contact.phoneDisplay}
                 </li>
-                <li className="flex items-center gap-2 text-slate-500 text-sm">
+                <li className="flex items-center gap-2 text-slate-400 text-sm">
                   <Mail size={14} className="text-blue-500" /> {siteData.personal.contact.email}
                 </li>
-                <li className="flex items-center gap-2 text-slate-500 text-sm">
+                <li className="flex items-center gap-2 text-slate-400 text-sm">
                   <Clock size={14} className="text-blue-500" /> {siteData.personal.contact.hours}
                 </li>
              </ul>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-600 uppercase tracking-widest font-bold">
+        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-400 uppercase tracking-widest font-bold">
            <div>© {new Date().getFullYear()} YAGO LUIZ HILLESHEIM. TODOS OS DIREITOS RESERVADOS.</div>
         </div>
       </div>
@@ -927,19 +672,12 @@ export default function App() {
     <div className="bg-slate-950 min-h-screen text-slate-300 selection:bg-blue-600 selection:text-white font-sans scroll-smooth">
       <Navbar />
       <Hero />
-      <ChallengeSection />
-      <AboutSection />
-      <SolutionSection />
-      <InteractiveDiagnostic />
-      <ExperienceSection />
       <ResultsSection />
-      <MethodSection />
-      <ToolSection />
-      <FAQ />
+      <ServicesSection />
+      <ExperienceSection />
+      <AboutSection />
       <ContactSection />
       <Footer />
-
-      
       <FloatingCTA />
     </div>
   );

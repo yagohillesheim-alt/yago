@@ -1,4 +1,4 @@
-import { Solution, Metric, ExperienceItem, FAQItem, CaseStudy } from './types';
+import { Solution, Metric, ExperienceItem, FAQItem, CaseStudy } from '../types';
 
 export const siteData = {
   personal: {
@@ -129,6 +129,48 @@ export const siteData = {
       items: ["Redução de Tarefas Manuais", "Integração de Ferramentas", "Automação de Rotinas", "Alertas Inteligentes", "Padronização de Saídas", "Redução de Retrabalho"]
     }
   ] as Solution[],
+  timeline: [
+    {
+      company: "Vision System",
+      role: "Project Manager",
+      period: "Nov/2023 – atual",
+      highlights: [
+        "Implantação de ERP e software de gestão de resíduos para clientes estratégicos, com foco em performance e escalabilidade",
+        "Backlog, cronogramas e ritos ágeis (Scrum/Kanban) com times multidisciplinares",
+        "-40% no tempo de processamento de relatórios com SQL e -92% no tempo de estruturação de cronogramas de treinamento",
+        "Change Management: treinamentos e documentação técnica para a autonomia dos clientes"
+      ]
+    },
+    {
+      company: "Dotse",
+      role: "Customer Success e Suporte",
+      period: "Out/2022 – Nov/2023",
+      highlights: [
+        "Onboarding personalizado para mais de 12 clientes B2B, com 100% de retenção no primeiro ciclo",
+        "Tratativas de nível 3 com manutenção em banco de dados (SQL) e SLA de resolução 25% menor",
+        "Ponte entre clientes e engenharia na priorização do backlog técnico"
+      ]
+    },
+    {
+      company: "Packid",
+      role: "Coordenador de Suporte",
+      period: "Jan/2022 – Ago/2022",
+      highlights: [
+        "+20% de satisfação (CSAT) e -33% no tempo de resposta com o redesenho dos fluxos de atendimento",
+        "Migração da plataforma de atendimento (Octadesk para Tallos) e implantação da API oficial do WhatsApp",
+        "Processo de validação de sistemas conforme requisitos da Anvisa"
+      ]
+    },
+    {
+      company: "Brasilfone e Angelira",
+      role: "Contas, Help Desk e Logística",
+      period: "2017 – 2022",
+      highlights: [
+        "Gestão de carteira de clientes com foco em retenção e recuperação",
+        "Análise de processos e rotas de logística com a TI, com -18% nos atrasos operacionais"
+      ]
+    }
+  ],
   experience: [
     {
       area: "Gestão e Implantação",
