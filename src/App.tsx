@@ -5,7 +5,7 @@ import {
   CheckCircle2, Menu, X, ArrowRight, Download,
   Mail, Link2, Camera, Phone, MapPin, Clock, Shield
 } from 'lucide-react';
-import { siteData } from './data/siteData';
+import { useLang } from './i18n';
 import { cn } from './lib/utils';
 
 // --- Icons Mapping ---
@@ -13,7 +13,6 @@ const IconMap: Record<string, any> = {
   Briefcase, Settings, Layers, BarChart3, Users, Zap
 };
 
-const CV_URL = '/Yago-Hillesheim-Curriculo.pdf';
 const SECTION_IDS = ['inicio', 'resultados', 'servicos', 'experiencia', 'sobre', 'contato'];
 
 // --- Helpers ---
@@ -66,6 +65,7 @@ const Avatar = ({ className }: { className?: string }) => {
 // --- Components ---
 
 const Navbar = () => {
+  const { t, data, lang, setLang } = useLang();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const active = useActiveSection(SECTION_IDS);
@@ -77,10 +77,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Resultados', href: '#resultados', id: 'resultados' },
-    { name: 'Serviços', href: '#servicos', id: 'servicos' },
-    { name: 'Experiência', href: '#experiencia', id: 'experiencia' },
-    { name: 'Sobre', href: '#sobre', id: 'sobre' },
+    { name: t.nav.results, href: '#resultados', id: 'resultados' },
+    { name: t.nav.services, href: '#servicos', id: 'servicos' },
+    { name: t.nav.experience, href: '#experiencia', id: 'experiencia' },
+    { name: t.nav.about, href: '#sobre', id: 'sobre' },
   ];
 
   return (
@@ -109,17 +109,27 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
+          <button
+            type="button"
+            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
+            aria-label={t.nav.switchTo}
+            className="font-tech text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            <span className={lang === 'pt' ? 'text-white' : ''}>PT</span>
+            <span className="text-slate-600"> | </span>
+            <span className={lang === 'en' ? 'text-white' : ''}>EN</span>
+          </button>
           <a
             href="#contato"
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
           >
-            Entrar em contato
+            {t.nav.contact}
           </a>
         </div>
 
         <button
           className="md:hidden text-white"
-          aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-label={isMobileMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
@@ -145,12 +155,22 @@ const Navbar = () => {
                   {link.name}
                 </a>
               ))}
-              <a
+              <button
+            type="button"
+            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
+            aria-label={t.nav.switchTo}
+            className="font-tech text-sm text-slate-400 text-left"
+          >
+            <span className={lang === 'pt' ? 'text-white' : ''}>PT</span>
+            <span className="text-slate-600"> | </span>
+            <span className={lang === 'en' ? 'text-white' : ''}>EN</span>
+          </button>
+          <a
                 href="#contato"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="bg-blue-600 text-white text-center py-3 rounded-lg font-semibold"
               >
-                Entrar em contato
+                {t.nav.contact}
               </a>
             </div>
           </motion.div>
@@ -161,6 +181,7 @@ const Navbar = () => {
 };
 
 const Hero = () => {
+  const { t, data, lang, setLang } = useLang();
   return (
     <section id="inicio" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-slate-950 bg-grid">
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none" />
@@ -175,33 +196,33 @@ const Hero = () => {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-300 font-tech text-xs mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              Implantação de ERP e SaaS · Chapecó/SC
+              {t.hero.badge}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-              Gestão de projetos, processos e tecnologia para empresas que precisam{' '}
-              <span className="text-blue-400">entregar melhor.</span>
+              {t.hero.h1a}{' '}
+              <span className="text-blue-400">{t.hero.h1b}</span>
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl leading-relaxed">
-              {siteData.valuePropositions[0]}
+              {data.valuePropositions[0]}
             </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
               <a
                 href="#contato"
                 className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                Solicitar conversa <ArrowRight size={18} />
+                {t.hero.cta} <ArrowRight size={18} />
               </a>
               <a
-                href={CV_URL}
+                href={t.cvUrl}
                 download
                 className="text-slate-200 hover:text-white font-medium flex items-center justify-center gap-2 transition-colors"
               >
-                <Download size={18} /> Baixar currículo (PDF)
+                <Download size={18} /> {t.hero.cv}
               </a>
             </div>
 
             <div className="mt-12 grid grid-cols-3 gap-6 pt-8 border-t border-slate-800">
-              {siteData.metrics.slice(0, 3).map((metric, idx) => (
+              {data.metrics.slice(0, 3).map((metric, idx) => (
                 <div key={idx}>
                   <div className="font-tech text-2xl md:text-3xl font-bold text-white mb-1">{metric.value}</div>
                   <div className="text-xs text-slate-400 leading-snug">{metric.label}</div>
@@ -220,7 +241,7 @@ const Hero = () => {
               <Avatar className="w-full aspect-[4/5]" />
               <div className="p-5 border-t border-slate-800">
                 <div className="text-white font-semibold">Yago Luiz Hillesheim</div>
-                <div className="text-slate-400 text-sm mb-4">Project Manager</div>
+                <div className="text-slate-400 text-sm mb-4">{t.hero.role}</div>
                 <div className="flex flex-wrap gap-2">
                   {['SaaS', 'ERP', 'Scrum', 'SQL', 'Power BI'].map((t) => (
                     <span key={t} className="font-tech text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">{t}</span>
@@ -238,15 +259,16 @@ const Hero = () => {
 const metricSources = ['Vision System', 'Vision System', 'Packid', 'Packid', 'Dotse', 'Angelira'];
 
 const ResultsSection = () => {
-  const [main, rest] = [siteData.metrics.slice(0, 3), siteData.metrics.slice(3)];
+  const { t, data, lang, setLang } = useLang();
+  const [main, rest] = [data.metrics.slice(0, 3), data.metrics.slice(3)];
 
   return (
     <section id="resultados" className="py-20 bg-slate-950 border-t border-slate-800/60">
       <div className="max-w-6xl mx-auto px-6">
         <SectionTitle
-          eyebrow="Resultados"
-          title="Números que vêm da operação"
-          text="Métricas obtidas nas empresas em que atuei, com a origem de cada uma."
+          eyebrow={t.results.eyebrow}
+          title={t.results.title}
+          text={t.results.text}
         />
 
         <div className="grid md:grid-cols-3 gap-6 mb-6">
@@ -273,27 +295,26 @@ const ResultsSection = () => {
         </div>
 
         <p className="mt-8 text-slate-400 text-xs">
-          * Resultados variam conforme o contexto, a maturidade da operação e o escopo de cada projeto.
+          {t.results.footnote}
         </p>
       </div>
     </section>
   );
 };
 
-const methodSteps = ['Diagnóstico', 'Mapeamento', 'Plano de ação', 'Execução', 'Melhoria contínua'];
-
 const ServicesSection = () => {
+  const { t, data, lang, setLang } = useLang();
   return (
     <section id="servicos" className="py-20 bg-slate-900/40 border-t border-slate-800/60">
       <div className="max-w-6xl mx-auto px-6">
         <SectionTitle
-          eyebrow="Serviços"
-          title="Como posso ajudar"
-          text="Seis frentes para conectar negócio, tecnologia e clientes com previsibilidade."
+          eyebrow={t.services.eyebrow}
+          title={t.services.title}
+          text={t.services.text}
         />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {siteData.solutions.map((sol) => {
+          {data.solutions.map((sol) => {
             const IconComp = IconMap[sol.icon] || Settings;
             return (
               <div key={sol.id} className="bg-slate-950 border border-slate-800 rounded-xl p-6 hover:border-blue-500/40 transition-colors flex flex-col">
@@ -313,9 +334,9 @@ const ServicesSection = () => {
         </div>
 
         <div className="mt-14">
-          <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-4">Como trabalho</div>
+          <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-4">{t.services.method}</div>
           <ol className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {methodSteps.map((step, idx) => (
+            {t.services.steps.map((step, idx) => (
               <li key={step} className="flex items-center gap-3 text-sm text-slate-200">
                 <span className="font-tech text-blue-400 text-xs">0{idx + 1}</span>
                 {step}
@@ -329,7 +350,7 @@ const ServicesSection = () => {
             href="#contato"
             className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
           >
-            Falar sobre o seu projeto <ArrowRight size={18} />
+            {t.services.talk} <ArrowRight size={18} />
           </a>
         </div>
       </div>
@@ -338,6 +359,7 @@ const ServicesSection = () => {
 };
 
 const ExperienceSection = () => {
+  const { t, data, lang, setLang } = useLang();
   return (
     <section id="experiencia" className="py-20 bg-slate-950 border-t border-slate-800/60">
       <div className="max-w-6xl mx-auto px-6">
@@ -345,22 +367,22 @@ const ExperienceSection = () => {
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-28">
               <SectionTitle
-                eyebrow="Trajetória"
-                title="Experiência"
-                text="Da logística e do suporte à gestão de implantações de ERP e SaaS."
+                eyebrow={t.experience.eyebrow}
+                title={t.experience.title}
+                text={t.experience.text}
               />
               <a
-                href={CV_URL}
+                href={t.cvUrl}
                 download
                 className="inline-flex items-center gap-2 border border-slate-700 hover:border-blue-500 text-white px-5 py-3 rounded-lg font-medium transition-colors"
               >
-                <Download size={18} /> Currículo completo (PDF)
+                <Download size={18} /> {t.experience.cv}
               </a>
             </div>
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            {siteData.timeline.map((job) => (
+            {data.timeline.map((job) => (
               <div key={job.company} className="bg-slate-900 border border-slate-800 rounded-xl p-6">
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-4">
                   <h3 className="text-lg font-semibold text-white">
@@ -386,10 +408,11 @@ const ExperienceSection = () => {
 };
 
 const AboutSection = () => {
+  const { t, data, lang, setLang } = useLang();
   const toolGroups = [
-    { label: 'Gestão', items: siteData.tools.methodologies },
-    { label: 'Dados', items: siteData.tools.data },
-    { label: 'Sistemas', items: siteData.tools.systems },
+    { label: t.about.groups.management, items: data.tools.methodologies },
+    { label: t.about.groups.data, items: data.tools.data },
+    { label: t.about.groups.systems, items: data.tools.systems },
   ];
 
   return (
@@ -397,13 +420,13 @@ const AboutSection = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid lg:grid-cols-5 gap-12">
           <div className="lg:col-span-3">
-            <SectionTitle eyebrow="Sobre" title={siteData.personal.name} />
+            <SectionTitle eyebrow={t.about.eyebrow} title={data.personal.name} />
             <p className="text-slate-300 leading-relaxed mb-6 -mt-6">
-              {siteData.personal.summary}
+              {data.personal.summary}
             </p>
             <div className="border-l-2 border-blue-500 pl-5 mb-10">
               <p className="text-slate-200">
-                Atuo como o elo entre a tecnologia e o negócio, para que projetos complexos virem entregas previsíveis.
+                {t.about.quote}
               </p>
             </div>
 
@@ -422,7 +445,7 @@ const AboutSection = () => {
 
             <div className="flex gap-4 mt-10">
               <a
-                href={siteData.personal.contact.linkedin}
+                href={data.personal.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-lg font-medium transition-colors border border-slate-700"
@@ -430,7 +453,7 @@ const AboutSection = () => {
                 <Link2 size={18} /> LinkedIn
               </a>
               <a
-                href={siteData.personal.contact.instagram}
+                href={data.personal.contact.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-lg font-medium transition-colors border border-slate-700"
@@ -443,25 +466,25 @@ const AboutSection = () => {
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <Shield size={18} className="text-blue-400" /> Formação
+                <Shield size={18} className="text-blue-400" /> {t.about.education}
               </h3>
               <ul className="space-y-3">
-                {siteData.personal.education.map((edu, idx) => (
+                {data.personal.education.map((edu, idx) => (
                   <li key={idx} className="text-sm text-slate-300">{edu}</li>
                 ))}
               </ul>
             </div>
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-white font-semibold mb-4">Certificações</h3>
+              <h3 className="text-white font-semibold mb-4">{t.about.certs}</h3>
               <ul className="space-y-2">
-                {siteData.personal.certifications.slice(0, 6).map((c, i) => (
+                {data.personal.certifications.slice(0, 6).map((c, i) => (
                   <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
                     <span className="w-1 h-1 bg-blue-400 rounded-full" /> {c}
                   </li>
                 ))}
               </ul>
-              <a href={CV_URL} download className="inline-block mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
-                Ver lista completa no currículo
+              <a href={t.cvUrl} download className="inline-block mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
+                {t.about.fullList}
               </a>
             </div>
           </div>
@@ -472,15 +495,16 @@ const AboutSection = () => {
 };
 
 const ContactSection = () => {
+  const { t, data, lang, setLang } = useLang();
   return (
     <section id="contato" className="py-20 bg-slate-950">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div>
-            <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-3">Contato</div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Solicite uma Conversa Estratégica</h2>
+            <div className="font-tech text-blue-400 text-xs tracking-widest uppercase mb-3">{t.contact.eyebrow}</div>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">{t.contact.title}</h2>
             <p className="text-slate-400 text-lg mb-10 leading-relaxed">
-              Pronto para organizar sua operação e acelerar seus projetos? Vamos avaliar juntos o melhor próximo passo.
+              {t.contact.text}
             </p>
 
             <div className="space-y-6">
@@ -489,17 +513,17 @@ const ContactSection = () => {
                   <Mail size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400 font-bold uppercase">Email</div>
-                  <div className="text-white font-medium">{siteData.personal.contact.email}</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">{t.contact.email}</div>
+                  <div className="text-white font-medium">{data.personal.contact.email}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.open(`https://wa.me/${siteData.personal.contact.phone}`, '_blank')}>
+              <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.open(`https://wa.me/${data.personal.contact.phone}`, '_blank')}>
                 <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-slate-800 group-hover:bg-blue-600 group-hover:text-white transition-all">
                   <Phone size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400 font-bold uppercase">WhatsApp</div>
-                  <div className="text-white font-medium">{siteData.personal.contact.phoneDisplay}</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">{t.contact.whatsapp}</div>
+                  <div className="text-white font-medium">{data.personal.contact.phoneDisplay}</div>
                 </div>
               </div>
               <div className="flex items-center gap-4 group cursor-pointer">
@@ -507,8 +531,8 @@ const ContactSection = () => {
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400 font-bold uppercase">Localização</div>
-                  <div className="text-white font-medium">{siteData.personal.contact.location}</div>
+                  <div className="text-xs text-slate-400 font-bold uppercase">{t.contact.location}</div>
+                  <div className="text-white font-medium">{data.personal.contact.location}</div>
                 </div>
               </div>
             </div>
@@ -518,25 +542,26 @@ const ContactSection = () => {
              <form className="space-y-6" onSubmit={(e) => {
                e.preventDefault();
                const d = new FormData(e.currentTarget);
+               const w = t.contact.wa;
                const text = [
-                 'Olá, Yago! Vim pelo seu site e gostaria de uma conversa estratégica.',
+                 w.intro,
                  '',
-                 `Nome: ${d.get('nome')}`,
-                 `Empresa: ${d.get('empresa')}`,
-                 `WhatsApp: ${d.get('whatsapp')}`,
-                 `Serviço de interesse: ${d.get('servico')}`,
-                 `Desafio: ${d.get('mensagem')}`,
+                 `${w.name}: ${d.get('nome')}`,
+                 `${w.company}: ${d.get('empresa')}`,
+                 `${w.whatsapp}: ${d.get('whatsapp')}`,
+                 `${w.service}: ${d.get('servico')}`,
+                 `${w.message}: ${d.get('mensagem')}`,
                ].join('\n');
-               window.open(`https://wa.me/${siteData.personal.contact.phone}?text=${encodeURIComponent(text)}`, '_blank');
+               window.open(`https://wa.me/${data.personal.contact.phone}?text=${encodeURIComponent(text)}`, '_blank');
              }}>
                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase">Nome Completo</label>
-                    <input type="text" name="nome" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Seu nome" />
+                    <label className="text-xs font-bold text-slate-400 uppercase">{t.contact.name}</label>
+                    <input type="text" name="nome" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder={t.contact.namePh} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase">Empresa</label>
-                    <input type="text" name="empresa" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Nome da empresa" />
+                    <label className="text-xs font-bold text-slate-400 uppercase">{t.contact.company}</label>
+                    <input type="text" name="empresa" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder={t.contact.companyPh} />
                   </div>
                </div>
                <div className="grid sm:grid-cols-2 gap-6">
@@ -545,26 +570,21 @@ const ContactSection = () => {
                     <input type="text" name="whatsapp" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="(00) 00000-0000" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase">Serviço de Interesse</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase">{t.contact.service}</label>
                     <select name="servico" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all appearance-none">
-                      <option>Gestão de Projetos</option>
-                      <option>Implantação de Sistemas</option>
-                      <option>Processos e Melhoria</option>
-                      <option>KPI e Análise de Dados</option>
-                      <option>Customer Success</option>
-                      <option>Outros</option>
+                      {t.contact.services.map((o, i) => <option key={i}>{o}</option>)}
                     </select>
                   </div>
                </div>
                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase">Mensagem / Desafio</label>
-                  <textarea name="mensagem" rows={4} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all resize-none" placeholder="Conte brevemente seu desafio..." />
+                  <label className="text-xs font-bold text-slate-400 uppercase">{t.contact.message}</label>
+                  <textarea name="mensagem" rows={4} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all resize-none" placeholder={t.contact.messagePh} />
                </div>
                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2">
-                  Solicitar Conversa Estratégica <ArrowRight size={20} />
+                  {t.contact.submit} <ArrowRight size={20} />
                </button>
                <p className="text-[10px] text-slate-400 text-center">
-                 Ao enviar, o WhatsApp abrirá com sua mensagem pronta. Seus dados são usados apenas para contato profissional.
+                 {t.contact.note}
                </p>
              </form>
           </div>
@@ -575,6 +595,7 @@ const ContactSection = () => {
 };
 
 const Footer = () => {
+  const { t, data, lang, setLang } = useLang();
   return (
     <footer className="bg-slate-950 border-t border-slate-900 pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-6">
@@ -587,49 +608,49 @@ const Footer = () => {
               <span className="text-white font-bold tracking-tight">YAGO HILLESHEIM</span>
             </div>
             <p className="text-slate-400 max-w-sm mb-8">
-              Conectando negócio, tecnologia e clientes para entregar resultados com previsibilidade e eficiência.
+              {t.footer.tagline}
             </p>
             <div className="flex gap-4">
-               <a href={siteData.personal.contact.linkedin} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="LinkedIn">
+               <a href={data.personal.contact.linkedin} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="LinkedIn">
                  <Link2 size={20} />
                </a>
-               <a href={siteData.personal.contact.instagram} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Instagram">
+               <a href={data.personal.contact.instagram} target="_blank" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Instagram">
                  <Camera size={20} />
                </a>
-               <a href={`mailto:${siteData.personal.contact.email}`} className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Email">
+               <a href={`mailto:${data.personal.contact.email}`} className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all border border-slate-800" title="Email">
                  <Mail size={20} />
                </a>
             </div>
           </div>
 
           <div>
-             <h4 className="text-white font-semibold mb-6">Navegação</h4>
+             <h4 className="text-white font-semibold mb-6">{t.footer.navigation}</h4>
              <ul className="space-y-4">
-                <li><a href="#sobre" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Sobre Mim</a></li>
-                <li><a href="#servicos" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Soluções</a></li>
-                <li><a href="#experiencia" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Experiência</a></li>
-                <li><a href="#resultados" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">Resultados</a></li>
+                <li><a href="#sobre" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">{t.footer.about}</a></li>
+                <li><a href="#servicos" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">{t.nav.services}</a></li>
+                <li><a href="#experiencia" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">{t.nav.experience}</a></li>
+                <li><a href="#resultados" className="text-slate-400 hover:text-blue-500 text-sm transition-colors">{t.nav.results}</a></li>
              </ul>
           </div>
 
           <div>
-             <h4 className="text-white font-semibold mb-6">Contato Direto</h4>
+             <h4 className="text-white font-semibold mb-6">{t.footer.direct}</h4>
              <ul className="space-y-4">
                 <li className="flex items-center gap-2 text-slate-400 text-sm">
-                  <Phone size={14} className="text-blue-500" /> {siteData.personal.contact.phoneDisplay}
+                  <Phone size={14} className="text-blue-500" /> {data.personal.contact.phoneDisplay}
                 </li>
                 <li className="flex items-center gap-2 text-slate-400 text-sm">
-                  <Mail size={14} className="text-blue-500" /> {siteData.personal.contact.email}
+                  <Mail size={14} className="text-blue-500" /> {data.personal.contact.email}
                 </li>
                 <li className="flex items-center gap-2 text-slate-400 text-sm">
-                  <Clock size={14} className="text-blue-500" /> {siteData.personal.contact.hours}
+                  <Clock size={14} className="text-blue-500" /> {data.personal.contact.hours}
                 </li>
              </ul>
           </div>
         </div>
 
         <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-400 uppercase tracking-widest font-bold">
-           <div>© {new Date().getFullYear()} YAGO LUIZ HILLESHEIM. TODOS OS DIREITOS RESERVADOS.</div>
+           <div>© {new Date().getFullYear()} YAGO LUIZ HILLESHEIM. {t.footer.rights}</div>
         </div>
       </div>
     </footer>
@@ -637,6 +658,7 @@ const Footer = () => {
 };
 
 const FloatingCTA = () => {
+  const { t } = useLang();
   const [pastHero, setPastHero] = useState(false);
   const [contactVisible, setContactVisible] = useState(false);
 
@@ -661,7 +683,7 @@ const FloatingCTA = () => {
         href="#contato"
         className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-2xl flex items-center justify-center gap-2 border border-blue-400"
       >
-        Solicitar Conversa Estratégica <ArrowRight size={20} />
+        {t.floatingCta} <ArrowRight size={20} />
       </a>
     </div>
   );
