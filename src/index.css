@@ -4,19 +4,24 @@
   :root {
     --primary: #2563eb;
     --secondary: #1e293b;
-    --background: #020617;
+    --background: #ffffff;
   }
-}
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--background);
-  color: #94a3b8;
-}
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--background);
+    color: #475569;
+    -webkit-font-smoothing: antialiased;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  color: white;
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  section[id] {
+    scroll-margin-top: 4rem;
+  }
 }
 
 .scroll-smooth {
@@ -29,11 +34,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
@@ -46,7 +51,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .bg-grid {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.07) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
