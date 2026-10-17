@@ -891,6 +891,37 @@ const Footer = () => {
   );
 };
 
+const FloatingCTA = () => {
+  const [pastHero, setPastHero] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    const contact = document.getElementById('contato');
+    const observer = new IntersectionObserver(([entry]) => setContactVisible(entry.isIntersecting));
+    if (contact) observer.observe(contact);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
+    };
+  }, []);
+
+  if (!pastHero || contactVisible) return null;
+
+  return (
+    <div className="md:hidden fixed bottom-6 left-6 right-6 z-40">
+      <a
+        href="#contato"
+        className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-2xl flex items-center justify-center gap-2 border border-blue-400"
+      >
+        Solicitar Conversa Estratégica <ArrowRight size={20} />
+      </a>
+    </div>
+  );
+};
+
 export default function App() {
   return (
     <div className="bg-slate-950 min-h-screen text-slate-300 selection:bg-blue-600 selection:text-white font-sans scroll-smooth">
@@ -909,15 +940,7 @@ export default function App() {
       <Footer />
 
       
-      {/* Floating CTA (Mobile) */}
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-40">
-        <a 
-          href="#contato"
-          className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-2xl flex items-center justify-center gap-2 border border-blue-400"
-        >
-          Solicitar Conversa Estratégica <ArrowRight size={20} />
-        </a>
-      </div>
+      <FloatingCTA />
     </div>
   );
 }
