@@ -721,25 +721,38 @@ const ContactSection = () => {
           </div>
 
           <div className="bg-slate-900 p-8 md:p-10 rounded-3xl border border-slate-800 shadow-2xl">
-             <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+             <form className="space-y-6" onSubmit={(e) => {
+               e.preventDefault();
+               const d = new FormData(e.currentTarget);
+               const text = [
+                 'Olá, Yago! Vim pelo seu site e gostaria de uma conversa estratégica.',
+                 '',
+                 `Nome: ${d.get('nome')}`,
+                 `Empresa: ${d.get('empresa')}`,
+                 `WhatsApp: ${d.get('whatsapp')}`,
+                 `Serviço de interesse: ${d.get('servico')}`,
+                 `Desafio: ${d.get('mensagem')}`,
+               ].join('\n');
+               window.open(`https://wa.me/${siteData.personal.contact.phone}?text=${encodeURIComponent(text)}`, '_blank');
+             }}>
                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase">Nome Completo</label>
-                    <input type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Seu nome" />
+                    <input type="text" name="nome" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Seu nome" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase">Empresa</label>
-                    <input type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Nome da empresa" />
+                    <input type="text" name="empresa" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="Nome da empresa" />
                   </div>
                </div>
                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase">WhatsApp</label>
-                    <input type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="(00) 00000-0000" />
+                    <input type="text" name="whatsapp" required className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" placeholder="(00) 00000-0000" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase">Serviço de Interesse</label>
-                    <select className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all appearance-none">
+                    <select name="servico" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all appearance-none">
                       <option>Gestão de Projetos</option>
                       <option>Implantação de Sistemas</option>
                       <option>Processos e Melhoria</option>
@@ -751,13 +764,13 @@ const ContactSection = () => {
                </div>
                <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase">Mensagem / Desafio</label>
-                  <textarea rows={4} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all resize-none" placeholder="Conte brevemente seu desafio..." />
+                  <textarea name="mensagem" rows={4} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-all resize-none" placeholder="Conte brevemente seu desafio..." />
                </div>
-               <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2">
+               <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2">
                   Solicitar Conversa Estratégica <ArrowRight size={20} />
                </button>
                <p className="text-[10px] text-slate-600 text-center">
-                 Ao enviar este formulário, você concorda com o processamento dos seus dados para fins de contato profissional.
+                 Ao enviar, o WhatsApp abrirá com sua mensagem pronta. Seus dados são usados apenas para contato profissional.
                </p>
              </form>
           </div>
@@ -871,11 +884,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-600 uppercase tracking-widest font-bold">
-           <div>© 2024 YAGO LUIZ HILLESHEIM. TODOS OS DIREITOS RESERVADOS.</div>
-           <div className="flex gap-6">
-              <a href="#" className="hover:text-white transition-colors">POLÍTICA DE PRIVACIDADE</a>
-              <a href="#" className="hover:text-white transition-colors">TERMOS DE USO</a>
-           </div>
+           <div>© {new Date().getFullYear()} YAGO LUIZ HILLESHEIM. TODOS OS DIREITOS RESERVADOS.</div>
         </div>
       </div>
     </footer>

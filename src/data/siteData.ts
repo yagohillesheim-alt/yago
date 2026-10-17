@@ -25,7 +25,7 @@ export const siteData = {
     ],
     contact: {
       phone: "5549999809524",
-      phoneDisplay: "+55 (49) 99998-09524",
+      phoneDisplay: "+55 (49) 99980-9524",
       phoneAlt: "(49) 99169-8280",
       email: "yagohillesheim@gmail.com",
       linkedin: "https://www.linkedin.com/in/yagohillesheim/",
